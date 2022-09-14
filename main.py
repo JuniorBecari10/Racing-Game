@@ -15,6 +15,8 @@ player_spr = pygame.image.load("player.png")
 player_speed = 5
 player = None
 
+enemy_speed = 2
+
 class Entity:
     def __init__(self, x, y, spr):
         self.x = x
@@ -25,12 +27,24 @@ class Entity:
         self.spr = pygame.transform.scale(spr, (self.spr_rect.width * 2, self.spr_rect.height * 2))
         self.spr_rect = self.spr.get_rect()
     
+    # it's made for you to override it
+    def tick(self):
+        pass
+    
     def render(self):
         screen.blit(self.spr, (self.x, self.y))
 
 class Car(Entity):
     def __init__(self, x, y, spr):
         Entity.__init__(self, x, y, spr)
+
+class Enemy(Entity):
+    def __init__(self, x, y, spr):
+        Entity.__init__(self, x, y, spr)
+    
+    # Overrides Entity.tick(self)
+    def tick(self):
+        self.y -= enemy_speed
 
 def init():
     global player
@@ -41,6 +55,9 @@ def init():
 
 def tick():
     global bg_y
+    
+    for e in entities:
+        e.tick()
     
     if bg_y > 0:
         bg_y -= 10
