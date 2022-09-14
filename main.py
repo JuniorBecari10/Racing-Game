@@ -1,4 +1,6 @@
 import pygame
+import random
+
 pygame.init()
 
 screen_dimensions = [840, 650]
@@ -12,8 +14,13 @@ bg_rect = bg.get_rect()
 bg_y = bg_rect.height / 2
 
 player_spr = pygame.image.load("player.png")
+enemy_spr = pygame.image.load("enemy.png")
+
 player_speed = 5
 player = None
+
+time_count = 0
+time_spawn = 50
 
 enemy_speed = 2
 
@@ -44,7 +51,10 @@ class Enemy(Entity):
     
     # Overrides Entity.tick(self)
     def tick(self):
-        self.y -= enemy_speed
+        self.y += enemy_speed
+        
+        if self.y > screen_dimensions[1]:
+            entities.remove(self)
 
 def init():
     global player
@@ -54,7 +64,7 @@ def init():
     entities.append(player)
 
 def tick():
-    global bg_y
+    global bg_y, time_count, time_spawn
     
     for e in entities:
         e.tick()
@@ -73,6 +83,13 @@ def tick():
         player.y = 0
     elif player.y > screen_dimensions[1] - player.spr_rect.height:
         player.y = screen_dimensions[1] - player.spr_rect.height
+    
+    time_count += 1
+    
+    if time_count >= time_spawn:
+        time_count = 0
+        
+        entities.append(Enemy(random.randint(150, 650), 0, enemy_spr))
 
 def render():
     # Draw bg
